@@ -49,6 +49,10 @@
 
   --text-color: var(--brand-ink);
   --text-color-hover: #000000;
+
+  /* Field borders are a solid mid gray in the design, darker than the kit's
+   * default hairline, and comfortably past the 3:1 non-text minimum. */
+  --border-color: #767676;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -58,6 +62,7 @@
      * both schemes, like the kit's own highlight colors. */
     --text-color: var(--gray-1200);
     --text-color-hover: var(--gray-1300);
+    --border-color: var(--gray-500);
   }
 }
 
@@ -73,10 +78,11 @@
   --button-highlight: transparent;
   --button-gradient: transparent;
   --button-shadow: var(--button-border);
+  --button-border-size: 1.5px;
 
   /* Default (primary) pill: the design's lavender "Entwurf speichern". */
   --button-background: var(--brand-lavender);
-  --button-border: var(--brand-lavender);
+  --button-border: var(--brand-violet);
   --button-text: var(--brand-ink);
 
   &:where([data-hovered]) {
@@ -111,7 +117,7 @@
  * veröffentlichen". */
 .button-base.pill-button.cta-button {
   --button-background: var(--brand-orange);
-  --button-border: var(--brand-orange);
+  --button-border: color-mix(in oklab, var(--brand-orange), #000 40%);
   /* Full black, not the brand ink: #232323 on this orange is 4.27:1, just
    * under AA's 4.5:1 for text this size. Black clears it at 5.7:1. */
   --button-text: #000000;
@@ -154,20 +160,71 @@
   min-height: 2.75rem;
   height: auto;
   padding-inline: var(--spacing-5);
-  font-size: 0.9375rem;
+}
+
+/* Labels and the counter follow the design: larger medium-weight labels,
+ * counters in the same ink as body text rather than a muted gray. */
+.react-aria-TextField .react-aria-Label {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.react-aria-TextField .field-description {
+  color: var(--text-color);
 }
 
 .react-aria-Dialog .react-aria-Heading[slot="title"] {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
 }
 
-/* The design's dialog is a touch wider than the kit default (500px), which
- * also lets the three action pills share one row on desktop. */
+/* The design's outlined toggle: white track and handle with an ink border,
+ * violet fill when on, slightly larger than the kit default. The selectors
+ * carry the SwitchField ancestor to outrank the kit's own nested rules. */
+.react-aria-SwitchField .react-aria-SwitchButton {
+  .track {
+    --height: var(--spacing-6);
+    width: calc(var(--spacing) * 11);
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+  }
+
+  .handle {
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+  }
+
+  &[data-selected] {
+    .track {
+      background: var(--brand-violet);
+    }
+
+    .handle {
+      /* Track width minus its height, so the handle lands on the far edge. */
+      transform: translateX(var(--spacing-5));
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .track,
+    .handle {
+      background: var(--gray-100);
+      box-shadow: inset 0 0 0 1.5px var(--text-color);
+    }
+
+    &[data-selected] .track {
+      background: var(--brand-violet);
+    }
+  }
+}
+
+/* The dialog matches the design frame's width and stays fluid below it. */
 .react-aria-ModalOverlay .react-aria-Modal {
-  max-width: min(560px, 92vw);
+  max-width: min(670px, 92vw);
 }
 
 .react-aria-ModalOverlay .react-aria-Dialog {
-  padding: var(--spacing-8);
+  padding: var(--spacing-10);
 }

@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
+import type { FormProps } from "react-aria-components/Form";
 import { Form } from "@/components/react-aria/Form";
 import { TextArea, TextField } from "@/components/react-aria/TextField";
 import { Switch } from "@/components/react-aria/Switch";
@@ -9,14 +10,15 @@ import {
   buildDraft,
   saveDraft,
 } from "./draft";
-import { formatCharacterCount, isBlankString } from "@/lib/string-utils";
+import { formatCharacterCount } from "@/lib/string-utils";
+import {
+  AUTHOR_REQUIRED,
+  CONTENT_REQUIRED,
+  TITLE_REQUIRED,
+  requireVisibleText,
+} from "@/lib/validation";
 import { DEFAULT_AUTHOR } from "./mock";
 import styles from "./petition-update.module.scss";
-
-/** Under `validationBehavior="native"` an empty `isRequired` field never
- * reaches submit, but whitespace-only input does — this catches it. */
-const requireVisibleText = (message: string) => (value: string) =>
-  isBlankString(value) ? message : null;
 
 export function PetitionUpdateForm() {
   const [title, setTitle] = useState("");
@@ -32,7 +34,7 @@ export function PetitionUpdateForm() {
     setIsSaved(false);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const handleSubmit: FormProps["onSubmit"] = (event) => {
     // React Aria only calls onSubmit once every constraint passes, so the
     // handler's jobs are stopping navigation and persisting the draft.
     event.preventDefault();
@@ -47,7 +49,7 @@ export function PetitionUpdateForm() {
       window.localStorage,
     );
     setIsSaved(true);
-  }
+  };
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -58,8 +60,8 @@ export function PetitionUpdateForm() {
         onChange={(value) => edit(() => setTitle(value))}
         isRequired
         maxLength={TITLE_MAX_LENGTH}
-        validate={requireVisibleText("Bitte gib einen Titel ein.")}
-        errorMessage="Bitte gib einen Titel ein."
+        validate={requireVisibleText(TITLE_REQUIRED)}
+        errorMessage={TITLE_REQUIRED}
         className={styles.countedField}
         description={formatCharacterCount(title.length, TITLE_MAX_LENGTH)}
       />
@@ -72,10 +74,8 @@ export function PetitionUpdateForm() {
         onChange={(value) => edit(() => setContent(value))}
         isRequired
         maxLength={CONTENT_MAX_LENGTH}
-        validate={requireVisibleText(
-          "Bitte schreibe einen Text für dein Update.",
-        )}
-        errorMessage="Bitte schreibe einen Text für dein Update."
+        validate={requireVisibleText(CONTENT_REQUIRED)}
+        errorMessage={CONTENT_REQUIRED}
         className={styles.countedField}
         description={formatCharacterCount(content.length, CONTENT_MAX_LENGTH)}
       />
@@ -96,19 +96,19 @@ export function PetitionUpdateForm() {
       <TextField
         name="author"
         label="Absender"
-        // The default sender is not editable; the switch swaps the field
-        // between showing it read-only and editing the custom name, so a
-        // half-typed name never poses as the locked default.
         value={useCustomAuthor ? customAuthor : DEFAULT_AUTHOR}
         onChange={(value) => edit(() => setCustomAuthor(value))}
+        // Read-only rather than disabled while the switch is off — the
+        // brief's own wording, and the better a11y call: the field stays in
+        // the tab order and its value (who the update publishes as) stays
+        // perceivable to screen readers, while a disabled field drops out of
+        // the tab order and is exempt from contrast requirements.
         isReadOnly={!useCustomAuthor}
         isRequired={useCustomAuthor}
         validate={
-          useCustomAuthor
-            ? requireVisibleText("Bitte gib einen Absender an.")
-            : undefined
+          useCustomAuthor ? requireVisibleText(AUTHOR_REQUIRED) : undefined
         }
-        errorMessage="Bitte gib einen Absender an."
+        errorMessage={AUTHOR_REQUIRED}
       />
 
       <div className={styles.actions}>
