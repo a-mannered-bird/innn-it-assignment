@@ -1,125 +1,192 @@
-# nextjs-a11y-boilerplate
+# innn.it Frontend Test: Petition-Update-Formular
 
-A Next.js App Router starting point where accessibility is enforced by the
-toolchain rather than asserted in prose.
+A petition update creation form in a permanently open modal, built for the
+innn.it frontend developer test against the provided Figma design.
 
-Next.js, React, TypeScript, CSS Modules with SCSS, and
-[React Aria Components](https://react-spectrum.adobe.com/react-aria/) for the
-interactive primitives.
+React 19, Next.js App Router, TypeScript, React Aria Components, CSS Modules
+with SCSS. The form takes a title, the update text and an optional custom
+sender, validates on the client with German messages, and stores the draft as
+one object in localStorage under `petition-update-draft` when "Entwurf
+speichern" is clicked. "Abbrechen" and "Update veröffentlichen" render but do
+nothing, as the brief specifies. Both bonus items are in: character counters
+(with `de-DE` grouping, "0 / 10.000 Zeichen") and unit tests.
 
 ## Getting started
 
 ```bash
-npm install
+npm ci
+npm run fonts   # optional, see the font note below
 npm run dev
 ```
 
-| Command                 | What it does                                                |
-| ----------------------- | ----------------------------------------------------------- |
-| `npm run verify`        | lint, format check, typecheck, tests. Run before commits.   |
-| `npm test`              | Every story in real Chromium with axe, plus any logic tests |
-| `npm run test:coverage` | `npm test` with a V8 coverage report over our own code      |
-| `npm run e2e`           | Builds, then runs Playwright against `next start`           |
-| `npm run storybook`     | Storybook on port 6006                                      |
-| `npm run typecheck`     | `next typegen && tsc --noEmit`                              |
+| Command             | What it does                                                |
+| ------------------- | ----------------------------------------------------------- |
+| `npm run dev`       | Dev server on port 3000                                     |
+| `npm run verify`    | Lint, format check, typecheck, all tests. Run before commit |
+| `npm test`          | Logic tests in node, every story in real Chromium with axe  |
+| `npm run e2e`       | Builds, then Playwright + axe against `next start`          |
+| `npm run storybook` | Storybook on port 6006                                      |
+| `npm run fonts`     | Downloads the brand fonts (see below)                       |
 
-CI (`.github/workflows/ci.yml`) runs the same commands, takes coverage while it
-runs the tests, and additionally builds Storybook so a Storybook-only break
-cannot ship green.
+## Where this started
 
-**[docs/code-quality.md](docs/code-quality.md)** catalogues every guardrail in the
-repository, what each one catches, where it is configured, and what is
-deliberately left unenforced.
+The first commit is my own
+[nextjs-a11y-boilerplate](https://github.com/a-mannered-bird/nextjs-a11y-boilerplate),
+a starter where accessibility is enforced by the toolchain rather than
+asserted in prose. Every guardrail, what it catches and what is deliberately
+not enforced is cataloged in
+[docs/code-quality.md](docs/code-quality.md). The vendored React Aria starter
+kit under `components/react-aria/` is third-party code (Apache-2.0) with its
+own `NOTICE`; the boundary between it and project code is documented there.
 
-## How accessibility is enforced
+This repository was built with Claude Code. Every decision above was made
+and reviewed deliberately: I validated each change hunk by hunk before
+committing, and the accessibility findings described here were verified by
+making the gates fail before making them pass.
 
-Three independent layers, because each catches what the others cannot.
+### The font note
 
-**Static analysis.** All 34 `jsx-a11y` rules run as errors, not warnings, and
-`npm run lint` uses `--max-warnings 0`. The default Next.js config enables only 6
-of them, all as warnings, which is why this is configured explicitly. A second
-rule makes `'use client'` on a page or layout a build failure, so the client
-boundary cannot quietly creep upwards.
+The brief links `expose-fonts.css`, which serves Söhne by Klim Type Foundry, a
+commercially licensed typeface. This repository is public, so the font
+binaries are not committed: redistributing them would violate the license.
+`npm run fonts` downloads the three used weights from innn.it into
+`public/fonts/` (gitignored), and without them the UI falls back to
+`system-ui`. CI runs without the fonts and stays green.
 
-**Per component.** Every story runs in real Chromium via the Storybook Vitest
-addon with axe attached. `a11y.test = "error"` is set globally, so a new story is
-gated without anyone remembering to opt in.
+## How the requirements map
 
-**Per page.** One Playwright spec runs axe over every route in its list —
-currently `/` and a deliberate 404. This is the only layer that sees
-heading order, landmark structure, duplicate ids and focus behaviour after a
-state change. Adding a route to the list adds it to the scan.
+| Requirement                      | Where                                                                 |
+| -------------------------------- | --------------------------------------------------------------------- |
+| Title input, max 100 characters  | `petition-update-form.tsx`: `maxLength` hard cap plus counter         |
+| Main content textarea            | Same file, capped at 10.000 characters as in the design               |
+| Author input with edit toggle    | Same file, the "Absender ändern" switch                               |
+| Modal stays open, nothing closes | `petition-update-modal.tsx`: controlled `isOpen`, no `onOpenChange`   |
+| Save draft + success message     | Submit handler calls `saveDraft` (`draft.ts`); `role="status"` region |
+| No empty values                  | React Aria validation; "empty" includes whitespace-only input         |
+| Character counters (bonus)       | `formatCharacterCount` in `lib/string-utils.ts`, locale-aware         |
+| Unit tests (bonus)               | `draft.test.ts`, `string-utils.test.ts`, and story `play` functions   |
 
-Both axe layers were verified by deliberately introducing a violation and
-confirming the suite went red, rather than by trusting a passing run.
+## Decisions and trade-offs
 
-### Decisions worth explaining
+**There is no server action.** localStorage only exists in the browser, so
+"save draft" is a client-side submit handler. The page itself stays a Server
+Component; the modal feature is the single `'use client'` boundary. The draft
+logic (`draft.ts`) is pure and takes its `Storage` as a parameter, which is
+why it can be unit-tested in node without faking browser globals.
 
-## Structure
+**The modal is pinned open, including Escape and the X button.** The brief
+says no click outside and no button inside may close it, so the dialog is
+rendered with a controlled `isOpen` and no way to change it, and the X from
+the design is present but intentionally dead. To be clear: an accessible
+modal should normally close on Escape and on its close button. This one is a
+stated requirement, not a pattern I would ship unprompted, and the code
+comments say so.
 
-```
-app/                     routes, layouts, global styles
-features/                application components, colocated with their styles and tests
-components/react-aria/   vendored: Adobe's React Aria starter kit (Apache-2.0)
-e2e/                     Playwright specs
-```
+**The dialog title is the page's `h1`.** React Aria's modal makes everything
+behind the overlay inert and hidden from assistive technology, so a heading
+on the page behind it would be unreachable. With the dialog as the page's
+only real content, its title is the document's one `h1`.
 
-`components/react-aria/` is third-party source, not code written for this project.
-It carries its own `README.md`, `NOTICE` and `LICENSE`, and the `NOTICE` lists
-every modification made to it, as Apache-2.0 requires. Keeping it in one clearly
-labelled directory means a reviewer can tell at a glance which code is ours.
+**Validation is React Aria's own, with German messages.** An inline error per
+field (`aria-invalid` plus a linked message), focus moved to the first
+invalid field on a blocked submit, and "empty" means blank after trimming, so
+three spaces do not pass as a title. Stored values are trimmed to match what
+validation accepted. The boilerplate's focus-managed error summary pattern
+exists for server-returned errors after a round trip; with client validation
+on three fields it would duplicate what React Aria already announces.
 
-## Styling
+**The success message is a polite live region, not a focus move.** The brief
+wants the message at the bottom of the modal while the form stays usable.
+Nothing is replaced, and stealing focus from the button the user just clicked
+would be worse than announcing. The region is always rendered so the message
+appearing inside it is announced once, politely. Editing any field after a
+save removes the message, because it claims the stored draft matches the
+form, and after an edit that would be a lie.
 
-CSS Modules with SCSS for our components, plus CSS custom properties for tokens.
+**The sender model keeps the default and the custom name separate.** The
+switch decides which one is live: off shows the platform sender read-only
+(filled gray, as in the design), on edits the custom name, which starts empty
+and is required. Toggling off never leaks a half-typed custom name into a
+saved draft. The default sender is throwaway seed data and lives in
+`mock.ts`, marked for deletion when a real backend exists.
 
-No runtime CSS-in-JS: it forces every styled component into the client bundle and
-adds work on exactly the low-end mobile devices where there is least headroom.
-CSS Modules work in Server Components, so pages stay server-rendered and only
-interactive leaves ship JavaScript.
+**Styling is CSS Modules plus a token-level brand layer, not CSS-in-JS.** The
+brief allows Tailwind or Emotion but does not require them. Runtime CSS-in-JS
+forces every styled component into the client bundle, which hurts exactly the
+first-visit mobile audience a petition platform serves. The brand lives in
+`app/brand.scss`: font faces, the palette as custom properties, control
+sizing through the kit's own tokens, and pill button styles that are opt-in
+classes. Opt-in matters: the vendored kit embeds its Button inside selects,
+calendars and steppers, and repainting the default variants globally broke a
+vendored story's contrast gate within minutes of trying it.
 
-The vendored kit keeps its own convention of global stylesheets keyed on React
-Aria's class names, because that is how it is built. Rather than rewrite 56
-components, the boundary is documented: global there, scoped here.
+**Playwright, not Cypress.** The Storybook test runner already brings a real
+browser; a second automation stack would duplicate it. Cypress is listed as a
+bonus in the job context, so the trade-off is documented here rather than
+silently ignored.
+
+**What the tooling caught while building, which is why it is layered:**
+
+- axe flagged impossible contrast values on page load. Root cause: it samples
+  colors while the modal's fade-in animation is still running, so text at 40%
+  opacity reads as gray. The e2e config now emulates `prefers-reduced-motion`
+  (a real user preference the global reset honors), which makes the scan
+  deterministic instead of disabling any rule.
+- The per-component axe gate caught the orange CTA at 4.27:1 against AA's
+  4.5:1 for its text size, after I had hand-waved the pair as passing. The
+  page-level scan had let it through; the story-level one did not.
 
 ## Testing
 
-| Layer     | Location                    | Environment   |
-| --------- | --------------------------- | ------------- |
-| Logic     | `*.test.ts`, vitest `unit`  | node          |
-| Component | `*.stories.tsx` with `play` | real Chromium |
-| Journey   | `e2e/*.spec.ts`, Playwright | `next start`  |
+| Layer     | Where                         | What it proves                                          |
+| --------- | ----------------------------- | ------------------------------------------------------- |
+| Logic     | `*.test.ts` in node           | Draft building, trimming, author choice, serialization  |
+| Component | Stories with `play` functions | Validation UX, saving, the toggle flow, the live region |
+| Journey   | `e2e/a11y.spec.ts`            | Page-level axe scan of every route against `next start` |
 
-Component behaviour is tested as stories rather than as separate test files. A
-story is already a rendered component with typed props, so it serves as the
-behaviour test, the accessibility check and the documentation at once. Queries,
-`userEvent` and jest-dom matchers all come from `storybook/test`, so no separate
-Testing Library or jsdom setup is needed.
+The stories run in real Chromium and assert behavior through roles and
+labels: a blocked empty submit (errors visible, focus on the first invalid
+field, nothing stored), a successful save (announcement plus the exact object
+in localStorage), the full custom-sender flow, and that Escape, the X and a
+backdrop click all leave the modal open.
 
-E2E runs against `next start`, never `next dev`. Dev mode skips CSS chunking and
-minification and runs React in development, so it cannot tell you anything about
-what a user downloads.
+Deliberately not tested, and why:
 
-Playwright rather than Cypress: the Storybook test runner already brings a real
-browser, and adding a second browser automation stack to do a job the first one is
-already doing is duplication.
+- No test for restoring a draft, because there is no restore (next section).
+- No behavior tests for "Abbrechen" and "Update veröffentlichen", because the
+  brief explicitly gives them none.
+- No separate E2E journey spec. The whole journey is one form in one modal,
+  which the story layer already exercises in a real browser. E2E contributes
+  the page-level axe scan (heading order, landmarks, duplicate ids) that
+  component-level tests structurally cannot see.
 
-## Deliberately not done
+## Deliberately not built
 
-- **`cacheComponents` and Partial Prerendering.** This is where caching a page
-  shell while streaming live data belongs, and it is the right answer for a page
-  whose content is stable but whose counters are not. It is left out because
-  adopting a new caching model is a larger change than a boilerplate should carry
-  by default.
-- **Structured data.** schema.org has no type that fits every page, and a wrong
-  type is worse than none, so it is left to whatever is built on top of this.
-- **Coverage thresholds.** Coverage is measured and published as a CI artifact,
-  but no number gates the build. A threshold picked arbitrarily is worse than
-  none; set one once the code it measures is real.
+- **Draft restore on load.** The brief says store, not load. Restoring raises
+  product questions (when to clear, what wins after a publish) that a test
+  assignment should not answer unasked.
+- **Multiple drafts, timestamps, versioning.** One key, one object,
+  overwritten on each save. "Store the entered data as an object" is the
+  requirement; everything beyond it is scope creep.
+- **Behavior for cancel and publish.** Excused by the brief.
+- **An i18n framework.** The copy is hardcoded German, `lang="de"` is set,
+  and number formatting follows the app-wide locale constant. One market, one
+  language, no abstraction.
+- **A petition page behind the modal.** Everything behind the permanently
+  open overlay is inert and invisible to assistive technology, so content
+  there would be decoration nobody can reach.
 
-## Tooling note
+## Accessibility
 
-This repository was set up with Claude Code. Every decision above was
-made deliberately and verified by running it: the accessibility gates were tested
-by making them fail, the CSS reduction was measured before and after, and the
-focus behaviour was checked in a browser rather than assumed.
+Enforced at three independent points, all of them build failures: all 34
+`jsx-a11y` rules as lint errors, axe against every story in real Chromium,
+and axe with pinned WCAG 2.1 AA tags against every route in production mode.
+A keyboard-only pass covers the whole flow: tab order follows the visual
+order, focus is trapped in the dialog, the switch toggles with Space, a
+blocked submit moves focus to the first invalid field, and the focus ring is
+visible on every stop.
+
+Two honest caveats. The never-closing modal contradicts expected dialog
+behavior by explicit requirement. And automated scans plus one keyboard pass
+make the form less-barriered, not barrier-free; claims beyond that would need
+testing with real assistive technology users.
