@@ -47,7 +47,10 @@ describe("saveDraft", () => {
 
 describe("loadDraft", () => {
   function storageOf(value: string | undefined) {
-    return { getItem: (key: string) => (key === DRAFT_STORAGE_KEY ? (value ?? null) : null) };
+    return {
+      getItem: (key: string) =>
+        key === DRAFT_STORAGE_KEY ? (value ?? null) : null,
+    };
   }
 
   it("returns null when nothing is stored", () => {

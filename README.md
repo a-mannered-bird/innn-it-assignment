@@ -7,8 +7,9 @@ React 19, Next.js App Router, TypeScript, React Aria Components, CSS Modules
 with SCSS. The form takes a title, the update text and an optional custom
 sender, validates on the client with German messages, and stores the draft as
 one object in localStorage under `petition-update-draft` when "Entwurf
-speichern" is clicked. "Abbrechen" and "Update veröffentlichen" render but do
-nothing, as the brief specifies. Both bonus items are in: character counters
+speichern" is clicked, restoring it into the form the next time the modal
+opens. "Abbrechen" and "Update veröffentlichen" render but do nothing, as the
+brief specifies. Both bonus items are in: character counters
 (with `de-DE` grouping, "0 / 10.000 Zeichen") and unit tests.
 
 ## Getting started
@@ -121,7 +122,27 @@ switch decides which one is live: off shows the platform sender read-only
 (filled gray, as in the design), on edits the custom name, which starts empty
 and is required. Toggling off never leaks a half-typed custom name into a
 saved draft. The default sender is throwaway seed data and lives in
-`mock.ts`, marked for deletion when a real backend exists.
+`mock.ts`, marked for deletion when a real backend exists. Restoring a draft
+whose stored author is not the default flips the switch on and repopulates
+the custom name, so the toggle stays an honest reflection of what is saved.
+
+**Reopening the modal restores the last saved draft.** The brief only asks
+to store the draft, but a save the user can never see again is easy to
+mistake for one that didn't work, so the form seeds itself from
+`localStorage` once, right after hydration. It reads through
+`useSyncExternalStore` rather than a `useEffect`: `localStorage` doesn't
+exist during server rendering, and that hook is React's supported way to
+read a browser-only value without a hydration mismatch, returning the same
+"nothing yet" result the server produced until the client has mounted, then
+re-reading. The stored value is untrusted input, not a value the app
+controls end to end, so `parseDraft` runs it through a runtime type guard
+(`isPetitionUpdateDraft`) rather than trusting the shape: corrupted JSON, a
+missing key, or a value shaped by some future draft schema all fall back to
+"no draft" instead of crashing the form. The restore itself runs during
+render, guarded so it fires exactly once, and it deliberately leaves
+`isSaved` false: that flag means "a save just happened", not "the fields
+match storage", and setting it on restore would announce a save that didn't
+just occur.
 
 **Styling is CSS Modules plus a token-level brand layer, not CSS-in-JS.** The
 brief allows Tailwind or Emotion but does not require them. Runtime CSS-in-JS
@@ -149,11 +170,11 @@ silently ignored.
 
 ## Testing
 
-| Layer     | Where                         | What it proves                                          |
-| --------- | ----------------------------- | ------------------------------------------------------- |
-| Logic     | `*.test.ts` in node           | Draft building, trimming, author choice, serialization  |
-| Component | Stories with `play` functions | Validation UX, saving, the toggle flow, the live region |
-| Journey   | `e2e/a11y.spec.ts`            | Page-level axe scan of every route against `next start` |
+| Layer     | Where                         | What it proves                                             |
+| --------- | ----------------------------- | ---------------------------------------------------------- |
+| Logic     | `*.test.ts` in node           | Draft building, trimming, author choice, (de)serialization |
+| Component | Stories with `play` functions | Validation UX, saving, the toggle flow, the live region    |
+| Journey   | `e2e/a11y.spec.ts`            | Page-level axe scan of every route against `next start`    |
 
 The stories run in real Chromium and assert behavior through roles and
 labels: a blocked empty submit (errors visible, focus on the first invalid
@@ -163,7 +184,6 @@ backdrop click all leave the modal open.
 
 Deliberately not tested, and why:
 
-- No test for restoring a draft, because there is no restore (next section).
 - No behavior tests for "Abbrechen" and "Update veröffentlichen", because the
   brief explicitly gives them none.
 - No separate E2E journey spec. The whole journey is one form in one modal,
@@ -173,9 +193,6 @@ Deliberately not tested, and why:
 
 ## Deliberately not built
 
-- **Draft restore on load.** The brief says store, not load. Restoring raises
-  product questions (when to clear, what wins after a publish) that a test
-  assignment should not answer unasked.
 - **Multiple drafts, timestamps, versioning.** One key, one object,
   overwritten on each save. "Store the entered data as an object" is the
   requirement; everything beyond it is scope creep.

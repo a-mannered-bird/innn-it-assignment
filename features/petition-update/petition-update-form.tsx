@@ -59,9 +59,7 @@ export function PetitionUpdateForm() {
   // never re-fires and clobber the fields once the user starts typing.
   // isSaved deliberately stays false: that message means "just saved", not
   // "matches what's stored".
-  const [appliedDraftJson, setAppliedDraftJson] = useState<string | null>(
-    null,
-  );
+  const [appliedDraftJson, setAppliedDraftJson] = useState<string | null>(null);
   if (storedDraftJson !== null && storedDraftJson !== appliedDraftJson) {
     setAppliedDraftJson(storedDraftJson);
     const draft = parseDraft(storedDraftJson);
