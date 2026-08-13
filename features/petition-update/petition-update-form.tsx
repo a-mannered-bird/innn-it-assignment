@@ -108,7 +108,7 @@ export function PetitionUpdateForm() {
         maxLength={TITLE_MAX_LENGTH}
         validate={requireVisibleText(TITLE_REQUIRED)}
         errorMessage={TITLE_REQUIRED}
-        className={styles.countedField}
+        className={`${styles.countedField} ${styles.emphasizedLabel}`}
         description={formatCharacterCount(title.length, TITLE_MAX_LENGTH)}
       />
 
@@ -122,7 +122,7 @@ export function PetitionUpdateForm() {
         maxLength={CONTENT_MAX_LENGTH}
         validate={requireVisibleText(CONTENT_REQUIRED)}
         errorMessage={CONTENT_REQUIRED}
-        className={styles.countedField}
+        className={`${styles.countedField} ${styles.emphasizedLabel}`}
         description={formatCharacterCount(content.length, CONTENT_MAX_LENGTH)}
       />
 

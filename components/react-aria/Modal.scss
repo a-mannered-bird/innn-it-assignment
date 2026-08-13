@@ -41,6 +41,12 @@
   }
 }
 
+/* innn.it brand: the dialog matches the design frame's width and stays
+ * fluid below it. */
+.react-aria-Modal {
+  max-width: min(670px, 92vw);
+}
+
 @keyframes modal-fade {
   from {
     opacity: 0;

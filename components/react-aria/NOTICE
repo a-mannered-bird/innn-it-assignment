@@ -72,3 +72,17 @@ to the files as distributed by Adobe:
    with `var(--font-family, system-ui)`, so an application can set a brand
    font in one declaration rather than in 34 files. The boilerplate leaves
    the custom property undeclared, so the rendered font is unchanged.
+
+7. innn.it brand styling appended to the end of five stylesheets, after each
+   file's own rules, so the additions read as a distinct block rather than
+   interleaving with the vendor's declarations:
+   - `Button.scss`: flat pill-button variant (`.pill-button`,
+     `.pill-button[data-variant="secondary"]`, `.pill-button.cta-button`).
+   - `TextField.scss`: taller input/textarea sizing, a filled read-only
+     state, and full-ink description text.
+   - `Dialog.scss`: a larger, bolder dialog title.
+   - `Switch.scss`: an outlined track/handle in place of the kit's filled
+     switch.
+   - `Modal.scss`: a wider max-width for the dialog frame.
+   No existing declaration was edited or removed; each addition is a
+   separate, source-order-later rule.

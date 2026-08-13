@@ -1,8 +1,20 @@
+// Overrides the vendored Dialog's default padding (--spacing-10) to match
+// the design's 24px, without editing components/react-aria/Dialog.scss.
+// Compounded with :global(.react-aria-Dialog) so this two-class selector
+// outweighs the vendored single-class rule regardless of CSS load order.
+.dialog:global(.react-aria-Dialog) {
+  padding: var(--spacing-6);
+}
+
 .titleRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-4);
+
+  :global(.react-aria-Heading[slot="title"]) {
+    font-weight: 500;
+  }
 }
 
 // The vendored Description sits inside the field wrapper; aligning it right
@@ -23,14 +35,27 @@
   flex-wrap: wrap;
 }
 
+// Matches the global h2 type scale (app/globals.scss) so the heading and the
+// labels styled to look like it stay in step if that scale ever changes.
+$heading-font-size: calc(1.5 * var(--font-size));
+
 .authorHeading {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: $heading-font-size;
+  font-weight: 500;
+}
+
+// Titel and Deine Neuigkeiten are exceptionally styled to match the
+// Absender heading above, even though they remain field labels, not
+// headings.
+.emphasizedLabel :global(.react-aria-Label) {
+  font-size: $heading-font-size;
+  font-weight: 500;
+  margin-bottom: var(--spacing-4);
 }
 
 .authorHint {
-  margin-block: var(--spacing-2) var(--spacing-4);
+  margin-block: 0 var(--spacing-2);
 }
 
 .actions {
@@ -48,12 +73,17 @@
 }
 
 .status {
-  // Reserve one line so a save does not shift the layout under the cursor.
-  min-height: 1.5rem;
-  margin-block-start: var(--spacing-4);
+  // Collapses the Form's flex gap above this row when there is no message,
+  // so an empty status region (kept in the DOM for the live region) does
+  // not leave a visible gap below the buttons. Not display:none: the region
+  // must stay perceivable so a screen reader picks up the later change.
+  &:empty {
+    margin-block-start: calc(-1 * var(--spacing-6));
+  }
 
   p {
     margin: 0;
+    margin-block-start: var(--spacing-4);
     font-weight: 600;
   }
 }

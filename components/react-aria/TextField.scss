@@ -38,3 +38,30 @@
   min-height: 64px;
   padding: var(--spacing-2) var(--spacing-3);
 }
+
+/* innn.it brand: taller fields from the design frame. */
+.react-aria-Input,
+.react-aria-TextArea {
+  min-height: 2.75rem;
+  padding-block: var(--spacing-2);
+}
+
+/* Read-only fields are filled gray in the design (the locked sender name),
+ * not just missing a caret. Text stays at AA contrast on the fill. */
+.react-aria-TextField[data-readonly] .react-aria-Input {
+  background: #ececec;
+  color: #595959;
+}
+
+@media (prefers-color-scheme: dark) {
+  .react-aria-TextField[data-readonly] .react-aria-Input {
+    background: var(--gray-200);
+    color: var(--text-color);
+  }
+}
+
+/* The counter and description follow the design: full ink, not the kit's
+ * muted gray. */
+.react-aria-TextField .field-description {
+  color: var(--text-color);
+}

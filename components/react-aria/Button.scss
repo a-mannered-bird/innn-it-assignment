@@ -45,3 +45,72 @@
     margin-inline-start: var(--spacing-3);
   }
 }
+
+/* innn.it brand: flat pill buttons, as opt-in utility classes in the spirit
+ * of .visually-hidden. The kit embeds its Button inside Selects, calendars
+ * and steppers, so repainting the default variants globally would restyle
+ * all of them; instead a standalone action button declares itself a pill.
+ * The kit paints buttons with inset gradients and specular highlights,
+ * innn.it's are flat with a hairline border, so the gradient layers are
+ * blanked. */
+.button-base.pill-button {
+  min-height: 2.75rem;
+  height: auto;
+  border-radius: 9999px;
+  font-weight: 500;
+  padding-inline: var(--spacing-5);
+  --button-highlight: transparent;
+  --button-gradient: transparent;
+  --button-shadow: var(--button-border);
+  --button-border-size: 1.5px;
+
+  /* Default (primary) pill: the design's lavender "Entwurf speichern". */
+  --button-background: var(--brand-lavender);
+  --button-border: var(--brand-violet);
+  --button-text: var(--brand-ink);
+
+  &:where([data-hovered]) {
+    --button-background: color-mix(in oklab, var(--brand-lavender), #000 6%);
+  }
+
+  &:where([data-pressed]) {
+    --button-background: color-mix(in oklab, var(--brand-lavender), #000 12%);
+  }
+}
+
+.button-base.pill-button[data-variant="secondary"] {
+  --button-background: #ffffff;
+  --button-border: var(--brand-violet);
+  --button-text: var(--brand-ink);
+
+  &:where([data-hovered]) {
+    --button-background: color-mix(in oklab, #ffffff, var(--brand-violet) 8%);
+  }
+
+  &:where([data-pressed]) {
+    --button-background: color-mix(in oklab, #ffffff, var(--brand-violet) 16%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --button-background: transparent;
+    --button-text: var(--text-color);
+  }
+}
+
+/* The one call-to-action per view: the design's orange "Update
+ * veröffentlichen". */
+.button-base.pill-button.cta-button {
+  --button-background: var(--brand-orange);
+  --button-border: color-mix(in oklab, var(--brand-orange), #000 40%);
+  /* Full black, not the brand ink: #232323 on this orange is 4.27:1, just
+   * under AA's 4.5:1 for text this size. Black clears it at 5.7:1. */
+  --button-text: #000000;
+
+  &:where([data-hovered]) {
+    --button-background: color-mix(in oklab, var(--brand-orange), #000 8%);
+  }
+
+  &:where([data-pressed]) {
+    --button-background: color-mix(in oklab, var(--brand-orange), #000 16%);
+  }
+}

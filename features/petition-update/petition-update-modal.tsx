@@ -15,7 +15,7 @@ import styles from "./petition-update.module.scss";
 export function PetitionUpdateModal() {
   return (
     <Modal isOpen isDismissable={false} isKeyboardDismissDisabled>
-      <Dialog>
+      <Dialog className={`react-aria-Dialog ${styles.dialog}`}>
         <div className={styles.titleRow}>
           {/* level 1: the inert page behind the overlay is hidden from the
               accessibility tree, so this title is the page's one <h1>. */}

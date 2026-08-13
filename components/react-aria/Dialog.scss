@@ -10,3 +10,9 @@
     margin-bottom: 1em;
   }
 }
+
+/* innn.it brand: a bolder dialog title from the design frame. */
+.react-aria-Dialog .react-aria-Heading[slot="title"] {
+  font-size: 2rem;
+  font-weight: 700;
+}

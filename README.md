@@ -12,6 +12,13 @@ opens. "Abbrechen" and "Update veröffentlichen" render but do nothing, as the
 brief specifies. Both bonus items are in: character counters
 (with `de-DE` grouping, "0 / 10.000 Zeichen") and unit tests.
 
+> **If your system is set to dark mode, you are not looking at the Figma
+> design.** The whole UI, brand layer included, responds to
+> `prefers-color-scheme: dark` as a bonus on top of the brief: text, field,
+> and toggle colors all get a dark-mode pass, not just the vendored kit's
+> own tokens. Switch your OS to light mode (or force it in the browser dev
+> tools) to see the layout actually built against the design frame.
+
 ## Getting started
 
 ```bash
@@ -50,7 +57,7 @@ switch's keyboard and `role` semantics, the field's `aria-invalid` and
 easy to get subtly wrong under time pressure. Building it from scratch would have spent
 the time budget re-implementing behavior a maintained library already gets
 right, with none of its test coverage. The library is headless, so it cost
-nothing on the styling side either: `app/brand.scss` styles it as freely as
+nothing on the styling side either: the brand layer styles it as freely as
 it would have styled plain HTML.
 
 This repository was built with Claude Code. Every decision above was made
@@ -147,10 +154,15 @@ just occur.
 **Styling is CSS Modules plus a token-level brand layer, not CSS-in-JS.** The
 brief allows Tailwind or Emotion but does not require them. Runtime CSS-in-JS
 forces every styled component into the client bundle, which hurts exactly the
-first-visit mobile audience a petition platform serves. The brand lives in
-`app/brand.scss`: font faces, the palette as custom properties, control
-sizing through the kit's own tokens, and pill button styles that are opt-in
-classes.
+first-visit mobile audience a petition platform serves. `app/brand.scss`
+carries only what is global: font faces, the palette as custom properties.
+Component-specific overrides (pill buttons, field sizing, the dialog title,
+the switch, modal width) live directly in their vendored stylesheets under
+`components/react-aria/`, appended after each component's own rules, rather
+than in a separate global sheet reaching into the kit's classes from
+outside. React Aria Components is used as a headless UI library, meant to be styled
+to the consuming project's own needs, so styling it in place is the kit
+working as intended rather than a deviation from it.
 
 **Playwright, not Cypress.** The Storybook test runner already brings a real
 browser; a second automation stack would duplicate it. Cypress is listed as a
@@ -206,9 +218,6 @@ Deliberately not tested, and why:
 These are not scope calls; they are things I wanted to do and ran out of
 time for, stated rather than left silent.
 
-- **A code review of `app/brand.scss`.** Verified in the browser against the
-  Figma frame at every step, but the stylesheet itself never got a
-  structured read-through for duplication or overly specific selectors.
 - **A code review of `petition-update.stories.tsx`.** Same gap: the play
   functions were verified by watching them pass in a real browser, not read
   back with a critical eye for redundant assertions or setup that could be
@@ -230,6 +239,18 @@ time for, stated rather than left silent.
   `features/super-form` before it was deleted at the start of this project)
   is what that failure state should reuse, since it exists for exactly this,
   an error the client cannot foresee, returned after a round trip.
+- **Matching the toggle exactly to the Figma design.** The current switch is
+  the vendored kit's component with the brand palette applied; the design's
+  own track and handle proportions were approximated rather than measured.
+- **Pixel-perfect font sizes and colors, particularly the counters and the
+  "Absender" label.** Sized and colored close to the design frame by eye,
+  not by pulling exact values from Figma. The brief asks for a layout
+  approximation, not a pixel match, so this was a conscious place to stop
+  rather than an oversight, but it is not pixel-perfect.
+- **Whether the shade on the text inputs should stay.** The fields carry a
+  light background fill that is not in the Figma frame; it reads well in
+  the browser but was not checked against the design, and I am not certain
+  it is the right call. Worth a second look rather than treated as settled.
 
 ## Accessibility
 
