@@ -46,8 +46,7 @@ implement the WAI-ARIA authoring practices already, tested across screen
 readers and browsers: the modal's focus trap and `aria-modal` behavior, the
 switch's keyboard and `role` semantics, the field's `aria-invalid` and
 `aria-describedby` wiring on error. That is precisely the surface that is
-easy to get subtly wrong under time pressure, and accessibility is the
-brief's second-highest priority. Building it from scratch would have spent
+easy to get subtly wrong under time pressure. Building it from scratch would have spent
 the time budget re-implementing behavior a maintained library already gets
 right, with none of its test coverage. The library is headless, so it cost
 nothing on the styling side either: `app/brand.scss` styles it as freely as
@@ -130,9 +129,7 @@ forces every styled component into the client bundle, which hurts exactly the
 first-visit mobile audience a petition platform serves. The brand lives in
 `app/brand.scss`: font faces, the palette as custom properties, control
 sizing through the kit's own tokens, and pill button styles that are opt-in
-classes. Opt-in matters: the vendored kit embeds its Button inside selects,
-calendars and steppers, and repainting the default variants globally broke a
-vendored story's contrast gate within minutes of trying it.
+classes.
 
 **Playwright, not Cypress.** The Storybook test runner already brings a real
 browser; a second automation stack would duplicate it. Cypress is listed as a
@@ -186,9 +183,6 @@ Deliberately not tested, and why:
 - **An i18n framework.** The copy is hardcoded German, `lang="de"` is set,
   and number formatting follows the app-wide locale constant. One market, one
   language, no abstraction.
-- **A petition page behind the modal.** Everything behind the permanently
-  open overlay is inert and invisible to assistive technology, so content
-  there would be decoration nobody can reach.
 
 ## Accessibility
 
