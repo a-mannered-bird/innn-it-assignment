@@ -1,0 +1,228 @@
+/* The innn.it brand layer: font, palette, and the flat pill buttons from the
+ * Figma frame. Loaded after the vendored theme so its :root declarations win.
+ * Values are approximations sampled from the design — the brief asks for a
+ * layout approximation, not a pixel match. */
+
+/* Söhne, self-hosted (see scripts/fetch-fonts.mjs — the files are gitignored
+ * for license reasons). One family name with real weights, rather than the
+ * one-family-per-weight setup innn.it serves, so `font-weight` works
+ * normally. Missing files simply fall through to system-ui. */
+@font-face {
+  font-family: "Soehne";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/soehne-buch.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Soehne";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/soehne-kraftig.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Soehne";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/soehne-dreiviertelfett.woff2") format("woff2");
+}
+
+:root {
+  --font-family: "Soehne", system-ui, sans-serif;
+
+  /* The design's type runs larger than the kit's 14px default. This wins over
+   * the kit's own responsive re-declaration because brand.scss enters the
+   * cascade last, so the size is a flat 16px everywhere. */
+  --font-size: 1rem;
+
+  --brand-ink: #232323;
+  --brand-violet: #6d4bd4;
+  --brand-lavender: #c9b8f0;
+  --brand-orange: #e4572e;
+
+  /* Drives the whole kit: switch, focus ring, selection, link colors. */
+  --tint: var(--brand-violet);
+
+  --text-color: var(--brand-ink);
+  --text-color-hover: #000000;
+
+  /* Field borders are a solid mid gray in the design, darker than the kit's
+   * default hairline, and comfortably past the 3:1 non-text minimum. */
+  --border-color: #767676;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Hand the text colors back to the kit's dark palette; the ink above is
+     * only right on light surfaces. The pill surfaces below stay identical in
+     * both schemes, like the kit's own highlight colors. */
+    --text-color: var(--gray-1200);
+    --text-color-hover: var(--gray-1300);
+    --border-color: var(--gray-500);
+  }
+}
+
+/* Flat brand pills, as opt-in utility classes in the spirit of
+ * .visually-hidden. The kit embeds its Button inside Selects, calendars and
+ * steppers, so repainting the default variants globally would restyle all of
+ * them; instead a standalone action button declares itself a pill. The kit
+ * paints buttons with inset gradients and specular highlights; innn.it's are
+ * flat with a hairline border, so the gradient layers are blanked. */
+.button-base.pill-button {
+  border-radius: 9999px;
+  font-weight: 500;
+  --button-highlight: transparent;
+  --button-gradient: transparent;
+  --button-shadow: var(--button-border);
+  --button-border-size: 1.5px;
+
+  /* Default (primary) pill: the design's lavender "Entwurf speichern". */
+  --button-background: var(--brand-lavender);
+  --button-border: var(--brand-violet);
+  --button-text: var(--brand-ink);
+
+  &:where([data-hovered]) {
+    --button-background: color-mix(in oklab, var(--brand-lavender), #000 6%);
+  }
+
+  &:where([data-pressed]) {
+    --button-background: color-mix(in oklab, var(--brand-lavender), #000 12%);
+  }
+}
+
+.button-base.pill-button[data-variant="secondary"] {
+  --button-background: #ffffff;
+  --button-border: var(--brand-violet);
+  --button-text: var(--brand-ink);
+
+  &:where([data-hovered]) {
+    --button-background: color-mix(in oklab, #ffffff, var(--brand-violet) 8%);
+  }
+
+  &:where([data-pressed]) {
+    --button-background: color-mix(in oklab, #ffffff, var(--brand-violet) 16%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --button-background: transparent;
+    --button-text: var(--text-color);
+  }
+}
+
+/* The one call-to-action per view: the design's orange "Update
+ * veröffentlichen". */
+.button-base.pill-button.cta-button {
+  --button-background: var(--brand-orange);
+  --button-border: color-mix(in oklab, var(--brand-orange), #000 40%);
+  --button-text: var(--brand-ink);
+
+  &:where([data-hovered]) {
+    --button-background: color-mix(in oklab, var(--brand-orange), #000 8%);
+  }
+
+  &:where([data-pressed]) {
+    --button-background: color-mix(in oklab, var(--brand-orange), #000 16%);
+  }
+}
+
+/* Control sizing from the design frame: taller fields and pills, a bolder
+ * dialog title. Selectors are qualified with a parent because the vendored
+ * component stylesheets load with their components — after this sheet — so a
+ * bare class here would lose on source order (the pills above learned the
+ * same lesson). */
+.react-aria-TextField .react-aria-Input,
+.react-aria-TextField .react-aria-TextArea {
+  min-height: 2.75rem;
+  padding-block: var(--spacing-2);
+}
+
+/* Read-only fields are filled gray in the design (the locked sender name),
+ * not just missing a caret. Text stays at AA contrast on the fill. */
+.react-aria-TextField[data-readonly] .react-aria-Input {
+  background: #ececec;
+  color: #595959;
+}
+
+@media (prefers-color-scheme: dark) {
+  .react-aria-TextField[data-readonly] .react-aria-Input {
+    background: var(--gray-200);
+    color: var(--text-color);
+  }
+}
+
+.button-base.pill-button {
+  min-height: 2.75rem;
+  height: auto;
+  padding-inline: var(--spacing-5);
+}
+
+/* Labels and the counter follow the design: larger medium-weight labels,
+ * counters in the same ink as body text rather than a muted gray. */
+.react-aria-TextField .react-aria-Label {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.react-aria-TextField .field-description {
+  color: var(--text-color);
+}
+
+.react-aria-Dialog .react-aria-Heading[slot="title"] {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* The design's outlined toggle: white track and handle with an ink border,
+ * violet fill when on, slightly larger than the kit default. The selectors
+ * carry the SwitchField ancestor to outrank the kit's own nested rules. */
+.react-aria-SwitchField .react-aria-SwitchButton {
+  .track {
+    --height: var(--spacing-6);
+    width: calc(var(--spacing) * 11);
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+  }
+
+  .handle {
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+  }
+
+  &[data-selected] {
+    .track {
+      background: var(--brand-violet);
+    }
+
+    .handle {
+      /* Track width minus its height, so the handle lands on the far edge. */
+      transform: translateX(var(--spacing-5));
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .track,
+    .handle {
+      background: var(--gray-100);
+      box-shadow: inset 0 0 0 1.5px var(--text-color);
+    }
+
+    &[data-selected] .track {
+      background: var(--brand-violet);
+    }
+  }
+}
+
+/* The dialog matches the design frame's width and stays fluid below it. */
+.react-aria-ModalOverlay .react-aria-Modal {
+  max-width: min(670px, 92vw);
+}
+
+.react-aria-ModalOverlay .react-aria-Dialog {
+  padding: var(--spacing-10);
+}

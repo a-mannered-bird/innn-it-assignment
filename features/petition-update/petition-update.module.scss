@@ -11,6 +11,10 @@
   text-align: right;
 }
 
+.countedField :global(.react-aria-TextArea) {
+  min-height: 8.5rem;
+}
+
 .authorHeader {
   display: flex;
   align-items: center;
@@ -21,7 +25,8 @@
 
 .authorHeading {
   margin: 0;
-  font-size: var(--font-size-lg);
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .authorHint {
@@ -34,6 +39,12 @@
   gap: var(--spacing-3);
   justify-content: space-between;
   margin-block-start: var(--spacing-6);
+
+  // The design's pills span the dialog edge to edge; growing also makes each
+  // wrapped button full-width on narrow screens.
+  > * {
+    flex: 1 0 auto;
+  }
 }
 
 .status {

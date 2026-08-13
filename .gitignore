@@ -54,3 +54,7 @@ storybook-static
 # personal working notes, not project conventions
 CLAUDE.local.md
 DECISIONS.md
+
+# Söhne is commercially licensed (Klim Type Foundry); the binaries must not be
+# redistributed through this public repository. `npm run fonts` fetches them.
+public/fonts/*.woff2

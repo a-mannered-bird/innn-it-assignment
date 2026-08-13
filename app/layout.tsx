@@ -4,6 +4,7 @@ import { LOCALE } from "./locale";
 import "@/components/react-aria/theme.scss";
 import "@/components/react-aria/utilities.scss";
 import "./globals.scss";
+import "./brand.scss";
 
 export const metadata: Metadata = {
   title: {
