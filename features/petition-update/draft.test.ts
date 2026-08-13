@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DRAFT_STORAGE_KEY, buildDraft, saveDraft } from "./draft";
+import { DRAFT_STORAGE_KEY, buildDraft, loadDraft, saveDraft } from "./draft";
 
 describe("buildDraft", () => {
   const input = {
@@ -42,5 +42,28 @@ describe("saveDraft", () => {
     const stored = written.get(DRAFT_STORAGE_KEY);
     expect(stored).toBeDefined();
     expect(JSON.parse(stored ?? "")).toEqual(draft);
+  });
+});
+
+describe("loadDraft", () => {
+  function storageOf(value: string | undefined) {
+    return { getItem: (key: string) => (key === DRAFT_STORAGE_KEY ? (value ?? null) : null) };
+  }
+
+  it("returns null when nothing is stored", () => {
+    expect(loadDraft(storageOf(undefined))).toBeNull();
+  });
+
+  it("returns null for malformed JSON", () => {
+    expect(loadDraft(storageOf("{not json"))).toBeNull();
+  });
+
+  it("returns null when the stored shape doesn't match a draft", () => {
+    expect(loadDraft(storageOf(JSON.stringify({ title: "Titel" })))).toBeNull();
+  });
+
+  it("returns the draft when it matches the expected shape", () => {
+    const draft = { title: "Titel", content: "Text", author: "Anna" };
+    expect(loadDraft(storageOf(JSON.stringify(draft)))).toEqual(draft);
   });
 });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { FormProps } from "react-aria-components/Form";
 import { Form } from "@/components/react-aria/Form";
 import { TextArea, TextField } from "@/components/react-aria/TextField";
@@ -6,8 +6,10 @@ import { Switch } from "@/components/react-aria/Switch";
 import { Button } from "@/components/react-aria/Button";
 import {
   CONTENT_MAX_LENGTH,
+  DRAFT_STORAGE_KEY,
   TITLE_MAX_LENGTH,
   buildDraft,
+  parseDraft,
   saveDraft,
 } from "./draft";
 import { formatCharacterCount } from "@/lib/string-utils";
@@ -20,12 +22,58 @@ import {
 import { DEFAULT_AUTHOR } from "./mock";
 import styles from "./petition-update.module.scss";
 
+// Never notifies: the stored draft only needs to be read once, right after
+// hydration, not watched for the rest of the session.
+function subscribeToNothing() {
+  return () => {};
+}
+
+function getStoredDraftJson() {
+  return window.localStorage.getItem(DRAFT_STORAGE_KEY);
+}
+
+function getServerDraftJson() {
+  return null;
+}
+
 export function PetitionUpdateForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [useCustomAuthor, setUseCustomAuthor] = useState(false);
   const [customAuthor, setCustomAuthor] = useState("");
   const [isSaved, setIsSaved] = useState(false);
+
+  // localStorage doesn't exist during SSR. useSyncExternalStore returns
+  // getServerDraftJson (null) for the server-rendered markup and the first
+  // client render, matching it exactly, then re-reads after hydration — the
+  // supported way to pull in a browser-only value without a mismatch.
+  const storedDraftJson = useSyncExternalStore(
+    subscribeToNothing,
+    getStoredDraftJson,
+    getServerDraftJson,
+  );
+
+  // Seeds the fields once when a stored draft first appears post-hydration.
+  // This runs during render (React's sanctioned way to adjust state from an
+  // external value, guarded against re-running), not in an effect, so it
+  // never re-fires and clobber the fields once the user starts typing.
+  // isSaved deliberately stays false: that message means "just saved", not
+  // "matches what's stored".
+  const [appliedDraftJson, setAppliedDraftJson] = useState<string | null>(
+    null,
+  );
+  if (storedDraftJson !== null && storedDraftJson !== appliedDraftJson) {
+    setAppliedDraftJson(storedDraftJson);
+    const draft = parseDraft(storedDraftJson);
+    if (draft) {
+      setTitle(draft.title);
+      setContent(draft.content);
+      if (draft.author !== DEFAULT_AUTHOR) {
+        setUseCustomAuthor(true);
+        setCustomAuthor(draft.author);
+      }
+    }
+  }
 
   // Any edit after a save invalidates "saved": the message is state, not a
   // toast, so it must never claim a stale draft is stored.

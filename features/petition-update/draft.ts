@@ -36,3 +36,30 @@ export function saveDraft(
 ) {
   storage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
 }
+
+function isPetitionUpdateDraft(value: unknown): value is PetitionUpdateDraft {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).title === "string" &&
+    typeof (value as Record<string, unknown>).content === "string" &&
+    typeof (value as Record<string, unknown>).author === "string"
+  );
+}
+
+export function parseDraft(stored: string | null): PetitionUpdateDraft | null {
+  if (!stored) return null;
+
+  try {
+    const parsed: unknown = JSON.parse(stored);
+    return isPetitionUpdateDraft(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function loadDraft(
+  storage: Pick<Storage, "getItem">,
+): PetitionUpdateDraft | null {
+  return parseDraft(storage.getItem(DRAFT_STORAGE_KEY));
+}
