@@ -5,6 +5,7 @@ import type { Preview } from "@storybook/nextjs-vite";
 import "../components/react-aria/theme.scss";
 import "../components/react-aria/utilities.scss";
 import "../app/globals.scss";
+import "../app/brand.scss";
 
 const preview: Preview = {
   parameters: {

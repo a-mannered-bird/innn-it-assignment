@@ -114,11 +114,15 @@ export function PetitionUpdateForm() {
       <div className={styles.actions}>
         {/* Abbrechen and Update veröffentlichen deliberately do nothing, and
             must not close the modal — both per the brief. */}
-        <Button type="button" variant="secondary">
+        <Button type="button" variant="secondary" className="pill-button">
           Abbrechen
         </Button>
-        <Button type="submit">Entwurf speichern</Button>
-        <Button type="button">Update veröffentlichen</Button>
+        <Button type="submit" className="pill-button">
+          Entwurf speichern
+        </Button>
+        <Button type="button" className="pill-button cta-button">
+          Update veröffentlichen
+        </Button>
       </div>
 
       {/* Always-rendered status region: text appearing inside it is announced
