@@ -270,7 +270,7 @@ testing with real assistive technology users.
 ## Time disclaimer
 
 This ran over the roughly three-hour scope stated in the brief. My last
-commit inside that window was `bd6f05a79497f798576c20c7655f86fa43b55749`
+commit inside that window was [bd6f05a](https://github.com/a-mannered-bird/innn-it-assignment/commit/bd6f05a79497f798576c20c7655f86fa43b55749)
 ("chore: Added \"left for later\" section to the README"); the session log
 below can be checked against it.
 
