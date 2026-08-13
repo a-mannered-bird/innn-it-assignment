@@ -29,14 +29,5 @@ Individual stylesheets in this directory must not import them again: doing so
 duplicated the full token block into all 53 CSS chunks, roughly 700 KB of
 repeated custom-property declarations.
 
-## Recovering a component
-
-Nothing has been deleted, but if a file is removed later it can be restored from
-the commit that introduced the kit:
-
-```bash
-git checkout 9bcb7cf -- components/Select.tsx components/Select.css
-```
-
 Note the original `.css` extension: stylesheets were renamed to `.scss` in a
 later commit, so a restored file needs the same rename and an updated import.
