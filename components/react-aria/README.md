@@ -29,15 +29,6 @@ Individual stylesheets in this directory must not import them again: doing so
 duplicated the full token block into all 53 CSS chunks, roughly 700 KB of
 repeated custom-property declarations.
 
-## Editing this directory
-
-Prefer not to. Anything project-specific belongs in `features/` or `app/`,
-composed from these primitives.
-
-Where an edit is unavoidable — keeping the repo's lint and type checks green, for
-instance — record it in the modifications list in [NOTICE](./NOTICE), as
-Apache-2.0 section 4(b) requires.
-
 ## Recovering a component
 
 Nothing has been deleted, but if a file is removed later it can be restored from
