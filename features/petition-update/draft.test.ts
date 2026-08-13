@@ -1,32 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  DRAFT_STORAGE_KEY,
-  buildDraft,
-  formatCharacterCount,
-  isBlank,
-  saveDraft,
-} from "./draft";
-
-describe("isBlank", () => {
-  it("treats whitespace-only input as empty", () => {
-    expect(isBlank("   ")).toBe(true);
-    expect(isBlank("\n\t")).toBe(true);
-  });
-
-  it("accepts input with any visible character", () => {
-    expect(isBlank(" a ")).toBe(false);
-  });
-});
-
-describe("formatCharacterCount", () => {
-  it("formats the count against its maximum", () => {
-    expect(formatCharacterCount(0, 100)).toBe("0 / 100 Zeichen");
-  });
-
-  it("groups thousands the German way, as in the design", () => {
-    expect(formatCharacterCount(1355, 10_000)).toBe("1.355 / 10.000 Zeichen");
-  });
-});
+import { DRAFT_STORAGE_KEY, buildDraft, saveDraft } from "./draft";
 
 describe("buildDraft", () => {
   const input = {
@@ -59,6 +32,9 @@ describe("saveDraft", () => {
     const storage = {
       setItem: (key: string, value: string) => written.set(key, value),
     };
+
+    const notStoredYet = written.get(DRAFT_STORAGE_KEY);
+    expect(notStoredYet).toBeUndefined();
 
     const draft = { title: "Titel", content: "Text", author: "Anna" };
     saveDraft(draft, storage);

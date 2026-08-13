@@ -15,7 +15,7 @@ export default defineConfig({
       reporter: ["text", "html", "lcov"],
       // Coverage is a signal about code written for this project, so the
       // vendored kit and files with no logic to exercise are left out.
-      include: ["app/**", "features/**", "components/**"],
+      include: ["app/**", "features/**", "components/**", "lib/**"],
       exclude: [
         "components/react-aria/**",
         "**/*.stories.tsx",
@@ -32,7 +32,7 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "node",
-          include: ["{app,features}/**/*.test.ts"],
+          include: ["{app,features,lib}/**/*.test.ts"],
         },
         // Mirrors the `@/*` path in tsconfig.json; the storybook project gets
         // it from the Next.js plugin, plain node needs it spelled out.
