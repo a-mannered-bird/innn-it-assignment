@@ -1,0 +1,74 @@
+React Aria Components starter kit
+Copyright 2022 Adobe. All rights reserved.
+
+This directory contains vendored third-party code: the "vanilla CSS" variant of
+Adobe's downloadable React Aria Components starter kit, obtained from
+https://react-spectrum.adobe.com/react-aria/ and part of the adobe/react-spectrum
+project (https://github.com/adobe/react-spectrum).
+
+Licensed under the Apache License, Version 2.0. A copy of the License is
+included in this directory as ./LICENSE, and is also available at
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied.
+
+Modifications made to the original files
+----------------------------------------
+As required by section 4(b) of the License, the following changes have been made
+to the files as distributed by Adobe:
+
+1. Stylesheets were renamed from `.css` to `.scss` and the corresponding imports
+   in the component files were updated. The CSS content itself was unchanged.
+
+2. The per-stylesheet `@import "./theme"` and `@import "./utilities"` rules were
+   removed. Both files are now loaded once from the application's root layout
+   instead, so their contents are no longer duplicated into every CSS chunk.
+   Where a stylesheet depended on another component's stylesheet (`./Form`,
+   `./TextField`), the `@import` was changed to `@use`, since Sass `@import` is
+   deprecated. No style declarations were added, removed or altered.
+
+3. Small changes to keep the repository's lint, type and formatting checks
+   passing, none of which alter component behaviour:
+   - Story files import story types from the framework package
+     (`@storybook/nextjs-vite`) rather than the renderer package
+     (`@storybook/react`).
+   - `GridList.stories.tsx`: `alt=""` added to the demo images, which are
+     decorative because each is labelled by the adjacent `<Text>` and by the
+     item's `textValue`.
+   - `Meter.tsx`, `ProgressBar.tsx`: the `as any` on inline styles carrying a CSS
+     custom property narrowed to `as CSSProperties`.
+   - `ColorWheel.tsx`: an empty `interface … extends Omit<…> {}` rewritten as an
+     equivalent type alias.
+   - Two unused declarations removed, `let` narrowed to `const` where never
+     reassigned, and the files formatted with the project's Prettier config.
+   - `CommandPalette.tsx`, `Dialog.stories.tsx`, `Modal.stories.tsx`: the three
+     `autoFocus` props annotated with a justified `jsx-a11y/no-autofocus`
+     suppression. The props themselves were not changed.
+   - `Toast.stories.tsx`: the hardcoded `title: "Toast"` removed so Storybook's
+     automatic titling groups it under `react-aria/` with the other stories in
+     this directory, rather than alongside the application's own.
+
+4. `Button.tsx`: the hardcoded `className` is now composed with the caller's
+   `className` instead of replacing it. As distributed, any class name passed to
+   a Button was silently dropped. The classes the kit applies are unchanged.
+
+5. Accessibility test settings, after the project's Storybook a11y checks were
+   made blocking by default. No component behaviour was changed:
+   - `Tooltip.stories.tsx`: `aria-label="Save"` added to the icon-only demo
+     button, which had no accessible name. A tooltip labels on hover and focus
+     but does not name the element.
+   - `Meter.stories.tsx`: the `aria-allowed-attr` axe rule disabled for this
+     story, with the reason recorded inline. It is a known axe false positive
+     against react-aria's `role="meter progressbar"`.
+   - `Calendar.stories.tsx`, `RangeCalendar.stories.tsx`: the
+     `landmark-banner-is-top-level` axe rule disabled for these stories. Both
+     render a bare `<header>`, which is a `banner` landmark only when rendered
+     outside a sectioning element — an artifact of the story canvas, not of the
+     component in a page.
+
+6. Every hardcoded `system-ui` font family in the stylesheets was replaced
+   with `var(--font-family, system-ui)`, so an application can set a brand
+   font in one declaration rather than in 34 files. The boilerplate leaves
+   the custom property undeclared, so the rendered font is unchanged.

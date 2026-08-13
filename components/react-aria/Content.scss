@@ -1,0 +1,29 @@
+.react-aria-Heading {
+  margin: 0;
+  font-family: var(--font-family, system-ui);
+  font-weight: 600;
+
+  &:is(h1) {
+    font-size: calc(1.75 * var(--font-size));
+  }
+
+  &:is(h2) {
+    font-size: calc(1.5 * var(--font-size));
+  }
+
+  &:is(h3) {
+    font-size: calc(1.25 * var(--font-size));
+  }
+
+  &:is(h4) {
+    font-size: var(--font-size-lg);
+  }
+
+  &:is(h5) {
+    font-size: var(--font-size);
+  }
+
+  &:is(h6) {
+    font-size: var(--font-size-sm);
+  }
+}

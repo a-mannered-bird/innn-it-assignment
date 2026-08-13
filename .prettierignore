@@ -1,0 +1,15 @@
+.next
+
+# Agent tooling state, including nested git worktrees
+.claude
+
+out
+build
+coverage
+storybook-static
+node_modules
+package-lock.json
+
+# Vendored third-party attribution (plain text, no parser)
+components/react-aria/NOTICE
+components/react-aria/LICENSE

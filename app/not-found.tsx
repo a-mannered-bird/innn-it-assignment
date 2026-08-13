@@ -1,0 +1,21 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+};
+
+export default function NotFound() {
+  return (
+    <main>
+      <h1>Page not found</h1>
+      <p>
+        The page you asked for does not exist. It may have moved, or the address
+        may be mistyped.
+      </p>
+      <p>
+        <Link href="/">Go to the home page</Link>
+      </p>
+    </main>
+  );
+}

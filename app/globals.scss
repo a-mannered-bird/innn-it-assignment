@@ -1,0 +1,177 @@
+/*
+ * App-level base styles: tokens, a minimal reset, and the handful of global
+ * utilities that are genuinely global concerns. Component styles do not live
+ * here — application components use CSS Modules.
+ *
+ * Design tokens come from components/react-aria/theme.scss, imported once in
+ * the root layout.
+ */
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* --- Reset ---------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Spacing is the responsibility of the component that owns the layout, so
+   default document margins are removed rather than adjusted. */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  padding: 0;
+  list-style: none;
+}
+
+/* Headings are plain elements in Server Components, so they do not pick up the
+   kit's .react-aria-Heading class. Same type scale, applied to the elements
+   themselves, so a heading looks identical whichever renders it. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+}
+
+h1 {
+  font-size: calc(1.75 * var(--font-size));
+}
+
+h2 {
+  font-size: calc(1.5 * var(--font-size));
+}
+
+h3 {
+  font-size: calc(1.25 * var(--font-size));
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+}
+
+h5 {
+  font-size: var(--font-size);
+}
+
+h6 {
+  font-size: var(--font-size-sm);
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--foreground);
+  background: var(--background);
+  /* The react-aria stylesheets resolve the same token, so controls and page
+     text share one stack. Declare --font-family to change both at once. */
+  font-family: var(--font-family, system-ui), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: underline;
+  transition-property: color, text-decoration-thickness;
+  transition-duration: 200ms;
+
+  &:hover {
+    text-decoration-thickness: 1.5px;
+  }
+
+  &:active {
+    color: var(--link-color-pressed);
+  }
+}
+
+/* --- Focus --------------------------------------------------------------- */
+
+/* Never remove an outline without replacing it. --focus-ring-color resolves to
+   the system Highlight colour under forced-colors, so this holds up there too. */
+:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* --- Utilities ----------------------------------------------------------- */
+
+/* Removes an element from view while leaving it in the accessibility tree, for
+   live regions and other screen-reader-only content. Global rather than a
+   module because it is a base-layer concern, like the reset above. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Motion -------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
