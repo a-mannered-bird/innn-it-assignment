@@ -7,17 +7,16 @@ import {
   CONTENT_MAX_LENGTH,
   TITLE_MAX_LENGTH,
   buildDraft,
-  formatCharacterCount,
-  isBlank,
   saveDraft,
 } from "./draft";
+import { formatCharacterCount, isBlankString } from "@/lib/string-utils";
 import { DEFAULT_AUTHOR } from "./mock";
 import styles from "./petition-update.module.scss";
 
 /** Under `validationBehavior="native"` an empty `isRequired` field never
  * reaches submit, but whitespace-only input does — this catches it. */
 const requireVisibleText = (message: string) => (value: string) =>
-  isBlank(value) ? message : null;
+  isBlankString(value) ? message : null;
 
 export function PetitionUpdateForm() {
   const [title, setTitle] = useState("");

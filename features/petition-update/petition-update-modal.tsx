@@ -10,6 +10,7 @@ import styles from "./petition-update.module.scss";
 /**
  * The brief pins this modal open: no outside click, Escape press or button
  * inside may close it, hence the controlled `isOpen` with no `onOpenChange`.
+ * Note: an a11y optimized modal should be dismissable with the escape key and the close and x buttons.
  */
 export function PetitionUpdateModal() {
   return (
