@@ -49,7 +49,7 @@ own `NOTICE`; the boundary between it and project code is documented there.
 
 **React Aria over hand-rolled components.** The modal, dialog, switch, text
 field and their validation wiring all come from Adobe's React Aria
-Components rather than plain HTML plus custom JavaScript. Those primitives
+Components rather than full custom components. Those primitives
 implement the WAI-ARIA authoring practices already, tested across screen
 readers and browsers: the modal's focus trap and `aria-modal` behavior, the
 switch's keyboard and `role` semantics, the field's `aria-invalid` and
@@ -218,7 +218,7 @@ Deliberately not tested, and why:
 These are not scope calls; they are things I wanted to do and ran out of
 time for, stated rather than left silent.
 
-- **A code review of `petition-update.stories.tsx`.** Same gap: the play
+- **A code review of `petition-update.stories.tsx`**. The play
   functions were verified by watching them pass in a real browser, not read
   back with a critical eye for redundant assertions or setup that could be
   shared.
