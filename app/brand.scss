@@ -112,7 +112,9 @@
 .button-base.pill-button.cta-button {
   --button-background: var(--brand-orange);
   --button-border: var(--brand-orange);
-  --button-text: var(--brand-ink);
+  /* Full black, not the brand ink: #232323 on this orange is 4.27:1, just
+   * under AA's 4.5:1 for text this size. Black clears it at 5.7:1. */
+  --button-text: #000000;
 
   &:where([data-hovered]) {
     --button-background: color-mix(in oklab, var(--brand-orange), #000 8%);
