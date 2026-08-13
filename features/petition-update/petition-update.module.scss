@@ -1,0 +1,48 @@
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+}
+
+// The vendored Description sits inside the field wrapper; aligning it right
+// turns it into the design's counter without forking the kit component.
+.countedField :global(.field-description) {
+  text-align: right;
+}
+
+.authorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+}
+
+.authorHeading {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.authorHint {
+  margin-block: var(--spacing-2) var(--spacing-4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  justify-content: space-between;
+  margin-block-start: var(--spacing-6);
+}
+
+.status {
+  // Reserve one line so a save does not shift the layout under the cursor.
+  min-height: 1.5rem;
+  margin-block-start: var(--spacing-4);
+
+  p {
+    margin: 0;
+    font-weight: 600;
+  }
+}

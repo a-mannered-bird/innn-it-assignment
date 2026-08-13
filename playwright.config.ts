@@ -12,6 +12,12 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "on-first-retry",
+    // The axe scan runs right after load, while entry animations (like the
+    // modal's fade-in) are still playing, and it samples the mid-animation
+    // opacity: text fading in at ~40% reads as low-contrast gray. Reduced
+    // motion is a real user preference the global reset honours by collapsing
+    // animations, so scanning that rendering is both legitimate and stable.
+    contextOptions: { reducedMotion: "reduce" },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {

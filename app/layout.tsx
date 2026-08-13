@@ -7,12 +7,11 @@ import "./globals.scss";
 
 export const metadata: Metadata = {
   title: {
-    default: "Next.js accessibility boilerplate",
-    template: "%s | Next.js accessibility boilerplate",
+    default: "Neues Update erstellen | innn.it",
+    template: "%s | innn.it",
   },
   description:
-    "A Next.js starter wired for accessibility: React Aria Components, " +
-    "axe-checked stories, and an end-to-end WCAG scan in CI.",
+    "Erstelle ein Update zu deiner Petition und speichere es als Entwurf.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
