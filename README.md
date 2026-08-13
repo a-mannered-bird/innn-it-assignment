@@ -201,6 +201,36 @@ Deliberately not tested, and why:
   and number formatting follows the app-wide locale constant. One market, one
   language, no abstraction.
 
+## Left for later
+
+These are not scope calls; they are things I wanted to do and ran out of
+time for, stated rather than left silent.
+
+- **A code review of `app/brand.scss`.** Verified in the browser against the
+  Figma frame at every step, but the stylesheet itself never got a
+  structured read-through for duplication or overly specific selectors.
+- **A code review of `petition-update.stories.tsx`.** Same gap: the play
+  functions were verified by watching them pass in a real browser, not read
+  back with a critical eye for redundant assertions or setup that could be
+  shared.
+- **A Playwright journey test that interacts with the form.**
+  `e2e/a11y.spec.ts` only loads each route and scans it with axe; it never
+  fills in the fields, submits, and asserts on the result. That behavior is
+  covered by the story `play` functions in real Chromium, but not by an
+  actual browser-navigation E2E journey, which is the layer meant to catch a
+  broken real-world interaction path end to end, independent of Storybook's
+  own runtime.
+- **Handling the save through a BFF, with an error summary on failure.** The
+  save is a pure client-side `localStorage.setItem` call today: there is no
+  network request, so nothing can fail mid-flight, and the current
+  validation is exhaustive by construction. A production version would
+  likely route "Entwurf speichern" through a backend-for-frontend endpoint,
+  and a failed response needs a real error path: the focus-managed error
+  summary pattern from the original boilerplate (harvested from
+  `features/super-form` before it was deleted at the start of this project)
+  is what that failure state should reuse, since it exists for exactly this,
+  an error the client cannot foresee, returned after a round trip.
+
 ## Accessibility
 
 Enforced at three independent points, all of them build failures: all 34
