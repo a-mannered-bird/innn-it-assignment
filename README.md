@@ -266,3 +266,40 @@ Two honest caveats. The never-closing modal contradicts expected dialog
 behavior by explicit requirement. And automated scans plus one keyboard pass
 make the form less-barriered, not barrier-free; claims beyond that would need
 testing with real assistive technology users.
+
+## Time disclaimer
+
+This ran over the roughly three-hour scope stated in the brief. My last
+commit inside that window was `bd6f05a79497f798576c20c7655f86fa43b55749`
+("chore: Added \"left for later\" section to the README"); the session log
+below can be checked against it.
+
+I was unsatisfied that the styling didn't match the Figma design closely
+enough, and closing that gap needed more manual adjustment than I had
+planned for. Mainly because I didn't have the rights to connect Claude to
+the Figma MCP connector the way I wanted to, most of the styling was adjusted
+manually rather than pulled from the design file directly.
+Had I realized that sooner, I would have spent the extra time closing that
+gap instead of on things like the localStorage read on open, for instance,
+which was not in the brief.
+
+## Session log
+
+Wall-clock times, elapsed time from the start in parentheses.
+
+| Time  | Elapsed | What                                                                                                              |
+| ----- | ------- | ----------------------------------------------------------------------------------------------------------------- |
+| 10:05 | 0:00    | Reading the brief, kicking off                                                                                    |
+| 10:17 | 0:15    | Defining the approach (grilling session), project setup                                                           |
+| 10:40 | 0:38    | Validation and storage helpers                                                                                    |
+| 11:00 | 0:58    | Building the petition form                                                                                        |
+| 11:20 | 1:18    | Break                                                                                                             |
+| 11:31 | 1:18    | End of break                                                                                                      |
+| 11:47 | 1:34    | Styling the form                                                                                                  |
+| 12:23 | 2:10    | Stories and component tests                                                                                       |
+| 12:35 | 2:22    | Start writing the README                                                                                          |
+| 13:10 | 2:50    | Adding the localStorage read (draft restore)                                                                      |
+| 13:19 | 2:59    | Updating the README with what I didn't have time to do                                                            |
+| 13:24 | 3:04    | Stealing a few minutes to adjust some style                                                                       |
+| 14:02 | 3:42    | It was more than a few minutes. Final README adjustments, plus a link to the commit where the scoped time ran out |
+| 14:10 | 3:50    | Last commit, verifying a fresh clone of the project works properly                                                |
