@@ -39,6 +39,20 @@ not enforced is cataloged in
 kit under `components/react-aria/` is third-party code (Apache-2.0) with its
 own `NOTICE`; the boundary between it and project code is documented there.
 
+**React Aria over hand-rolled components.** The modal, dialog, switch, text
+field and their validation wiring all come from Adobe's React Aria
+Components rather than plain HTML plus custom JavaScript. Those primitives
+implement the WAI-ARIA authoring practices already, tested across screen
+readers and browsers: the modal's focus trap and `aria-modal` behavior, the
+switch's keyboard and `role` semantics, the field's `aria-invalid` and
+`aria-describedby` wiring on error. That is precisely the surface that is
+easy to get subtly wrong under time pressure, and accessibility is the
+brief's second-highest priority. Building it from scratch would have spent
+the time budget re-implementing behavior a maintained library already gets
+right, with none of its test coverage. The library is headless, so it cost
+nothing on the styling side either: `app/brand.scss` styles it as freely as
+it would have styled plain HTML.
+
 This repository was built with Claude Code. Every decision above was made
 and reviewed deliberately: I validated each change hunk by hunk before
 committing, and the accessibility findings described here were verified by
